@@ -1,0 +1,22 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.fixAll.eslint":true
+    },
+    "eslint.validate": ["javascript", "typescript"],
+    "eslint.alwaysShowStatus": true,
+    "[typescript]": {
+       "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.printWidth": 80,
+    "prettier.tabWidth": 4,
+    "prettier.singleQuote": true,
+    "prettier.useTabs": true, // 使用tab缩进
+    "stylelint.validate": ["css", "less", "postcss", "scss", "sass"]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "ts-package-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "unpkg": "dist/index.umd.min.js",
+  "files": [
+    "dist",
+    "lib",
+    "esm",
+    "readme.md",
+    "tsconfig.json"
+  ],
+  "engines": {
+    "pnpm": ">=7"
+  },
+  "scripts": {
+    "prebuild": "rm -rf lib && rm -rf esm",
+    "build": "tsc --build ./src/tsconfig.build.json && tsc --build src/tsconfig.cjs.json",
+    "postbuild": "tsc-alias -p src/tsconfig.build.json && tsc-alias -p src/tsconfig.cjs.json && npm run types",
+    "types": "rm -rf types && tsc --build src/tsconfig.types.json && tsc-alias -p src/tsconfig.types.json",
+    "package": "NODE_ENV=production npm run build && rollup -c",
+    "prepackage": "rm -rf build",
+    "dev": "vite",
+    "build:example": "vite build --mode production"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-typescript": "^8.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.3.2",
+    "rollup": "^2.75.4",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "tsc-alias": "^1.6.7",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.2",
+    "vite": "^2.9.9",
+    "vite-tsconfig-paths": "^3.5.0"
+  }
+}
