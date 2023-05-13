@@ -2,7 +2,7 @@
     "compilerOptions": {
         "declaration": true,
         "baseUrl": ".",
-        "jsx": "react",
+        "jsx": "preserve",
         "target": "ES2020",
         "lib": ["ESNext", "DOM", "DOM.Iterable"],
         "module": "ESNext",
@@ -18,6 +18,9 @@
           "~/*": ["./src/*"],
           "@/*": ["./example/src/*"]
         }
+    },
+    "vueCompilerOptions": {
+        "target": 2.7
     },
     "exclude": ["esm/*", "build/*", "node_modules/*", "lib/*"]
 }
