@@ -1,6 +1,6 @@
 // @ts-check
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'; // 这个插件排除掉 peerDependencies 中的依赖 避免依赖重复引用
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';

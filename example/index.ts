@@ -1,4 +1,12 @@
-import { date, test } from '~';
+import Vue from 'vue';
+import App from '@/App.vue';
+import { myLog } from './src/utils';
+myLog('123');
 
+import { test } from '~/index';
 test();
-console.log(date);
+
+new Vue({
+	el: '#app',
+	render: (h) => h(App),
+});

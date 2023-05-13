@@ -1,9 +1,23 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "~/*": ["./src/*"],
-      "~": ["./src"]
-    }
-  }
+    "compilerOptions": {
+        "declaration": true,
+        "baseUrl": ".",
+        "jsx": "react",
+        "target": "ES2020",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "strict": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "sourceMap": true,
+        "types": [],
+        "paths": {
+          "~/*": ["./src/*"],
+          "@/*": ["./example/src/*"]
+        }
+    },
+    "exclude": ["esm/*", "build/*", "node_modules/*", "lib/*"]
 }
