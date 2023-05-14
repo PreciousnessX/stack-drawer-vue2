@@ -6,6 +6,8 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 
+import postcss from 'rollup-plugin-postcss';
+
 const packageJson = require('./package.json');
 
 const umdName = packageJson.name;
@@ -70,6 +72,7 @@ const config = [
 				tsconfig: './src/tsconfig.build.json',
 				declaration: false,
 			}),
+			postcss(),
 			// @ts-ignore
 			peerDepsExternal(),
 		],

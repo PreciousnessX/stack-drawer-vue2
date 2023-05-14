@@ -15,7 +15,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import StackDrawer from '../../src/index';
+import StackDrawer from 'stack-drawer-vue2';
 
 import TestComForStackDrawer from './TestComForStackDrawer.vue';
 
