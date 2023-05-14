@@ -27,7 +27,7 @@
 		"build:example": "vite build --mode production"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "hongbo",
 	"license": "ISC",
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^22.0.0",
