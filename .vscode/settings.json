@@ -1,22 +1,23 @@
 {
     "editor.codeActionsOnSave": {
         "source.fixAll": true,
-        "source.fixAll.eslint":true
+        "source.fixAll.eslint":true,
+        "source.fixAll.stylelint":true
     },
     "eslint.validate": ["javascript", "typescript", "vue"],
     "eslint.alwaysShowStatus": true,
     "[typescript]": {
-       "editor.defaultFormatter": "esbenp.prettier-vscode"
+       "editor.defaultFormatter": "dbaeumer.vscode-eslint"
     },
     "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
     },
     "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
     },
-    "prettier.printWidth": 80,
-    "prettier.tabWidth": 4,
+    // "prettier.printWidth": 80,
+    // "prettier.tabWidth": 4,
     "prettier.singleQuote": true,
-    "prettier.useTabs": true, // 使用tab缩进
+    // "prettier.useTabs": true, // 使用tab缩进
     "stylelint.validate": ["css", "less", "postcss", "scss", "sass"]
 }
