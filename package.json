@@ -4,12 +4,13 @@
 	"description": "",
 	"main": "dist/index.cjs.js",
 	"module": "dist/index.esm.js",
-	"types": "dist/index.d.ts",
+	"types": "types/index.d.ts",
 	"unpkg": "dist/index.umd.min.js",
 	"files": [
 		"dist",
 		"lib",
 		"esm",
+        "types",
 		"readme.md",
 		"tsconfig.json"
 	],
@@ -64,5 +65,8 @@
 	},
 	"peerDependencies": {
 		"vue": "^2.0"
-	}
+	},
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org"
+    }
 }
