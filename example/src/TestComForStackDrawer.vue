@@ -3,12 +3,7 @@
 		<TestStackDrawerChild v-if="show" v-bind="$attrs" v-on="$listeners" />
 		<div @click="show = !show">点击</div>
 		<ul>
-			<li
-				v-for="li in list"
-				:key="(li as string)"
-				class="li"
-				@click="clickOne(li as string)"
-			>
+			<li v-for="li in list" :key="li" class="li" @click="clickOne(li)">
 				{{ li }}
 			</li>
 		</ul>
@@ -22,7 +17,7 @@ import TestStackDrawerChild from './TestStackDrawerChild.vue';
 export default defineComponent({
 	components: { TestStackDrawerChild },
 	props: {
-		list: Array,
+		list: Array<string>,
 	},
 	setup(props, { emit }) {
 		onActivated(() => {
@@ -49,7 +44,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less">
+<style lang="scss">
 .test-com {
 	width: 400px;
 	height: 100%;

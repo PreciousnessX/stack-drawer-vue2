@@ -15,7 +15,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import StackDrawer from '~/index';
+import StackDrawer from '../../src/index';
+
 import TestComForStackDrawer from './TestComForStackDrawer.vue';
 
 export default defineComponent({
@@ -64,7 +65,6 @@ export default defineComponent({
 
 		const close = async () => {
 			const success = await StackDrawer.close();
-
 			if (success) {
 				console.log('关闭动画完成');
 			}
@@ -72,7 +72,6 @@ export default defineComponent({
 
 		const show = async () => {
 			const success = await StackDrawer.show();
-
 			if (success) {
 				console.log('show动画完成');
 			}
@@ -80,7 +79,6 @@ export default defineComponent({
 
 		const hide = async () => {
 			const success = await StackDrawer.hide();
-
 			if (success) {
 				console.log('hide动画完成');
 			}
@@ -141,7 +139,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less">
+<style lang="scss">
 .test-stack {
 	width: 100%;
 	height: 100%;

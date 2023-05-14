@@ -1,10 +1,11 @@
 <template>
-	<div class="my-app">vue文件 {{ a }}</div>
+	<div class="my-app">
+		<TestStackDrawer />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-const a = ref('xxx');
+import TestStackDrawer from './TestStackDrawer.vue';
 </script>
 
 <style lang="scss" scoped>

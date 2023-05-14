@@ -15,8 +15,8 @@
         "sourceMap": true,
         "types": [],
         "paths": {
-          "~/*": ["./src/*"],
-          "@/*": ["./example/src/*"]
+          "~/*": ["src/*"],
+          "@/*": ["example/src/*"]
         }
     },
     "vueCompilerOptions": {

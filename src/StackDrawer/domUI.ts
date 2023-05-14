@@ -1,6 +1,7 @@
+/* eslint-disable vue/require-render-return */
 import Vue from 'vue';
 import { sleep } from './utils';
-import { DefaultMethods, StackDrawerModel, DOM_CLASS_LIST } from './types';
+import { StackDrawerModel, DOM_CLASS_LIST } from './types';
 
 export const CUSTOM_WARP_ATTR = '__custom__warp__';
 
@@ -68,29 +69,18 @@ export function _disapper(model?: StackDrawerModel) {
 export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 	const { component, propsData, events, options } = model;
 
-	const methods: { [key: string]: Function } = {};
-	let template = '<com v-bind="$data"';
-	Object.keys(events).forEach((key) => {
-		// eslint-disable-next-line func-names
-		methods[key] = function (...arg: any) {
-			if (!options.keepEmit && !model.activate) return; // 非活跃状态下不触发事件
-			const fns = events[key];
-			fns.forEach((fn) => {
-				fn(...arg);
-			});
-		};
-		template += ` @${key}="${key}" `;
-	});
-	template += '></com>';
-
 	const Component = Vue.extend({
 		components: { com: component },
 		store: options.store,
 		data: () => ({
 			...propsData,
 		}),
-		methods: methods as DefaultMethods<Vue>,
-		template,
+		render(h: Vue.CreateElement) {
+			return h('com', {
+				attrs: { ...this.$data },
+				on: events,
+			});
+		},
 	} as any);
 
 	const $vmWarp = document.createElement('div');
