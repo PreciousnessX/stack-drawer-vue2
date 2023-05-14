@@ -1,0 +1,51 @@
+/* stylelint-disable selector-class-pattern */
+._stack_drawer_warp {
+    position: relative;
+    &._stack_drawer_warp_origin {
+        width: 100%;
+        height: 100%;
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 3000;
+    }
+    ._stack_drawer_mask {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        // background-color: rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        pointer-events: auto;
+    }
+    ._stack_drawer_main {
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        pointer-events: auto;
+
+        --transition-time: 0.5s;
+        &._stack_drawer_enter_from {
+            z-index: 99;
+            transition: all var(--transition-time);
+            transform: translateX(100%);
+        }
+        &._stack_drawer_enter_to {
+            transform: translateX(0%);
+        }
+        &._stack_drawer_leave_from {
+            z-index: 99;
+            transition: all var(--transition-time);
+            transform: translateX(0%);
+        }
+        &._stack_drawer_leave_to {
+            transform: translateX(100%);
+        }
+    }
+}
