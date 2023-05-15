@@ -1,6 +1,6 @@
 {
 	"name": "stack-drawer-vue2",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "",
 	"main": "dist/index.cjs.js",
 	"module": "dist/index.esm.js",
@@ -10,7 +10,7 @@
 		"dist",
 		"lib",
 		"esm",
-        "types",
+		"types",
 		"readme.md",
 		"tsconfig.json"
 	],
@@ -49,6 +49,7 @@
 		"rollup-plugin-postcss": "^4.0.2",
 		"sass": "^1.62.1",
 		"sass-loader": "^13.2.2",
+		"stack-drawer-vue2": "^1.0.0",
 		"stylelint": "^15.6.1",
 		"stylelint-config-recommended-vue": "^1.4.0",
 		"stylelint-config-standard": "^33.0.0",
@@ -66,7 +67,7 @@
 	"peerDependencies": {
 		"vue": "^2.0"
 	},
-    "publishConfig": {
-        "registry": "https://registry.npmjs.org"
-    }
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org"
+	}
 }
