@@ -69,6 +69,18 @@ export function _disapper(model?: StackDrawerModel) {
 export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 	const { component, propsData, events, options } = model;
 
+	const methods: { [key: string]: Function } = {};
+	Object.keys(events).forEach((key) => {
+		// eslint-disable-next-line func-names
+		methods[key] = function (...arg: any) {
+			if (!options.keepEmit && !model.activate) return; // 非活跃状态下不触发事件
+			const fns = events[key];
+			fns.forEach((fn) => {
+				fn(...arg);
+			});
+		};
+	});
+
 	const Component = Vue.extend({
 		components: { com: component },
 		store: options.store,
@@ -78,7 +90,7 @@ export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 		render(h: Vue.CreateElement) {
 			return h('com', {
 				attrs: { ...this.$data },
-				on: events,
+				on: methods,
 			});
 		},
 	} as any);
