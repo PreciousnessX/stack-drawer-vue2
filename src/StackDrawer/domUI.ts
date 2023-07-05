@@ -1,7 +1,8 @@
-/* eslint-disable vue/require-render-return */
 import Vue from 'vue';
 import { sleep } from './utils';
 import { StackDrawerModel, DOM_CLASS_LIST } from './types';
+
+const transitionTimeOut = 600;
 
 export const CUSTOM_WARP_ATTR = '__custom__warp__';
 
@@ -21,6 +22,14 @@ async function _invokTransition(
 			$dom.classList.remove(toClass);
 			resolve(true);
 		};
+
+		setTimeout(() => {
+			$dom.removeEventListener('transitionend', transitionEndFn);
+			$dom.classList.remove(fromClass);
+			$dom.classList.remove(toClass);
+			resolve('transition time out');
+		}, transitionTimeOut);
+
 		$dom.addEventListener('transitionend', transitionEndFn);
 	});
 	return true;
@@ -69,14 +78,16 @@ export function _disapper(model?: StackDrawerModel) {
 export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 	const { component, propsData, events, options } = model;
 
-	const methods: { [key: string]: Function } = {};
+	const eventFns: { [key: string]: Function } = {};
 	Object.keys(events).forEach((key) => {
 		// eslint-disable-next-line func-names
-		methods[key] = function (...arg: any) {
-			if (!options.keepEmit && !model.activate) return; // 非活跃状态下不触发事件
+		eventFns[key] = function (...arg: any) {
 			const fns = events[key];
 			fns.forEach((fn) => {
-				fn(...arg);
+				if ((<any>fn)._keep_emit || model.activate) {
+					// 非活跃状态下不触发事件
+					fn(...arg);
+				}
 			});
 		};
 	});
@@ -84,13 +95,14 @@ export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 	const Component = Vue.extend({
 		components: { com: component },
 		store: options.store,
+		router: options.router,
 		data: () => ({
 			...propsData,
 		}),
 		render(h: Vue.CreateElement) {
 			return h('com', {
 				attrs: { ...this.$data },
-				on: methods,
+				on: eventFns,
 			});
 		},
 	} as any);
@@ -103,8 +115,9 @@ export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 		$vmWarp.style.width = `${options.width}px`;
 	}
 
-	if (options.top !== undefined && !$vmWarp.hasAttribute(CUSTOM_WARP_ATTR)) {
-		$vmWarp.style.top = `${options.top}px`;
+	if (options.top !== undefined && !$warp.hasAttribute(CUSTOM_WARP_ATTR)) {
+		$warp.style.top = `${options.top}px`;
+		$warp.style.height = `calc(100% - ${options.top}px)`;
 	}
 
 	if (options.customClass) {
@@ -112,8 +125,6 @@ export function renderVm(model: StackDrawerModel, $warp: HTMLElement) {
 	}
 
 	const vm = new Component();
-
-	console.log(vm);
 
 	vm.$mount(); // 挂载
 	$vmWarp.appendChild(vm.$el);

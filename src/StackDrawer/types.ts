@@ -1,8 +1,5 @@
 /* eslint-disable max-classes-per-file */
 import Vue from 'vue';
-export type DefaultMethods<V> = {
-	[key: string]: (this: V, ...args: any[]) => any;
-};
 
 // eslint-disable-next-line no-shadow
 export enum DOM_CLASS_LIST {
@@ -20,11 +17,10 @@ export interface StackDrawerOptions {
 	width?: number; // 宽
 	top?: number; // 顶部top
 	customClass?: string; // 自定义类名
-	mask?: boolean; // 是否有遮罩
-	maskCloseAnimate?: boolean; // 遮罩触发的关闭 是否有动画
 	pushStack?: boolean; // 是否入栈
 	keepEmit?: boolean; // 子组件非活跃状态下保持事件触发
 	store?: any;
+	router?: any;
 }
 
 export interface EventCallBack extends Function {

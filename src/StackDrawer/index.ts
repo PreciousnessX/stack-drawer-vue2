@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
 import Vue from 'vue';
 import './stackDrawerStyle.scss';
 import { startWidthOpPerfix, transformKey } from './utils';
@@ -23,8 +24,15 @@ import {
 	_destoryDrawer,
 	_activate,
 	_deactivate,
-	setElementRemoveMutationObserver,
 } from './lifeCycle';
+
+import {
+	setElementRemoveMutationObserver,
+	addWindowClickOutCloseEvent,
+	removeWindowClickOutCloseEvent,
+	addSelectorClickOutCloseEvent,
+	removeSelectorClickOutCloseEvent,
+} from './events';
 
 /** *************** 原则: 视图层异步 数据层绝不可异步 **************** */
 
@@ -35,21 +43,27 @@ const getStackDrawerClass = () =>
 		static customWarp?: HTMLElement; // 自定义 视图 容器
 
 		static defaultOptions: StackDrawerOptions = {
-			mask: false, // 是否有遮罩
-			maskCloseAnimate: true, // 遮罩触发的关闭 是否有动画
 			pushStack: true, // 是否入栈
 			keepEmit: false, // 默认非活跃状态下 不保持事件触发
 		};
 
+		static clickOutClose = false; // 是否点击空白处关闭
+
+		static closeSelector = ''; // 需要挂载关闭事件的元素选择器
+
+		static ignoreSelector = ''; // 忽略 点击空白处关闭的选择器
+
+		_afterCloseFn?: Function;
+
+		_beforeCloseFn?: Function;
+
 		$warp!: HTMLElement;
 
-		$mask?: HTMLElement;
+		// options: StackDrawerOptions;
 
 		vector: StackDrawerModel[]; // Model容器
 
 		currentModel?: StackDrawerModel; // 当前数据层
-
-		static [key: string]: any;
 
 		constructor() {
 			this.vector = [];
@@ -58,6 +72,14 @@ const getStackDrawerClass = () =>
 			} else {
 				this._createWarp();
 			}
+		}
+
+		static setIgnoreSelector(selector: string) {
+			StackDrawer.ignoreSelector = selector;
+		}
+
+		static setCloseSelector(selector: string) {
+			StackDrawer.closeSelector = selector;
 		}
 
 		static setGlobalOption(options: StackDrawerOptions) {
@@ -69,7 +91,7 @@ const getStackDrawerClass = () =>
 
 		static setCustomWarp(customWarp: HTMLElement) {
 			// if (StackDrawer?.instance?.vector?.length) {
-			//     console.error('StackDrawer 栈不为空, 你可以调用 StackDrawer.close() 清空StackDrawer后再尝试设置customWarp');
+			//     console.error('StackDrawer 栈不为空, 你可以调用 StackDrawer.closeNow()) 清空StackDrawer后再尝试设置customWarp');
 			//     return;
 			// }
 			// if (StackDrawer.customWarp) {
@@ -81,8 +103,10 @@ const getStackDrawerClass = () =>
 			}
 			if (customWarp === StackDrawer.customWarp) return;
 			if (StackDrawer.instance) {
-				StackDrawer.close();
+				StackDrawer.closeNow();
 				if (!StackDrawer.customWarp) {
+					removeSelectorClickOutCloseEvent(StackDrawer);
+					removeWindowClickOutCloseEvent(StackDrawer);
 					StackDrawer.instance.$warp.remove();
 				}
 				StackDrawer.customWarp = customWarp;
@@ -97,7 +121,7 @@ const getStackDrawerClass = () =>
 			if (!StackDrawer.customWarp) return;
 			delete StackDrawer.customWarp;
 			if (!StackDrawer.instance) return;
-			StackDrawer.close();
+			StackDrawer.closeNow();
 			StackDrawer.instance._createWarp();
 		}
 
@@ -109,6 +133,17 @@ const getStackDrawerClass = () =>
 		) {
 			const ins = StackDrawer._getStackDrawer();
 			ins._push(component, propsData, options);
+			return StackDrawer;
+		}
+
+		// 可级联调用
+		static replace(
+			component: Vue.ComponentOptions<Vue>,
+			propsData: any,
+			options: StackDrawerOptions = {}
+		) {
+			const ins = StackDrawer._getStackDrawer();
+			ins._replace(component, propsData, options);
 			return StackDrawer;
 		}
 
@@ -129,6 +164,12 @@ const getStackDrawerClass = () =>
 		static async goBack(num = 1, animate = true) {
 			const ins = StackDrawer._getStackDrawer();
 			return ins._goBack(num, animate);
+		}
+
+		// 立即关闭 没有任何动画 不会返回promise
+		static closeNow() {
+			const ins = StackDrawer.instance;
+			return ins?._closeNow();
 		}
 
 		static async close(animate = true) {
@@ -161,6 +202,28 @@ const getStackDrawerClass = () =>
 			return StackDrawer.instance;
 		}
 
+		static registerAfterCloseEvent(fn: Function) {
+			const instance = StackDrawer._getStackDrawer();
+			instance._afterCloseFn = fn;
+		}
+
+		static removeAfterCloseEvent() {
+			if (StackDrawer.instance) {
+				delete StackDrawer.instance._afterCloseFn;
+			}
+		}
+
+		static registerBeforeCloseEvent(fn: Function) {
+			const instance = StackDrawer._getStackDrawer();
+			instance._beforeCloseFn = fn;
+		}
+
+		static removeBeforeCloseEvent() {
+			if (StackDrawer.instance) {
+				delete StackDrawer.instance._beforeCloseFn;
+			}
+		}
+
 		/** 创建容器 */
 		_createWarp() {
 			this.$warp = document.createElement('div');
@@ -168,37 +231,20 @@ const getStackDrawerClass = () =>
 			this.$warp.classList.add(DOM_CLASS_LIST.warpClassOrigon);
 			this.$warp.style.display = 'none';
 			document.body.appendChild(this.$warp);
+			addWindowClickOutCloseEvent(StackDrawer);
+			addSelectorClickOutCloseEvent(StackDrawer);
 		}
 
 		/** 初始化自定义容器 */
 		_initDiyWarp(customWarp: HTMLElement) {
 			setElementRemoveMutationObserver(customWarp, () => {
 				if (StackDrawer.customWarp === customWarp) {
-					StackDrawer.close(false);
+					StackDrawer.removeCustomWarp();
 				}
 			});
 			this.$warp = customWarp;
 			this.$warp.setAttribute(CUSTOM_WARP_ATTR, '1');
 			this.$warp.classList.add(DOM_CLASS_LIST.warpClass);
-		}
-
-		_addMask(maskClickAnimate = true) {
-			if (!this.$mask) {
-				this.$mask = document.createElement('div');
-				this.$mask.classList.add(DOM_CLASS_LIST.maskClass);
-				this.$mask.addEventListener('click', () =>
-					StackDrawer.close(maskClickAnimate)
-				);
-			}
-			if (this.$warp) {
-				this.$warp.appendChild(this.$mask);
-			}
-		}
-
-		_removeMask() {
-			if (this.$mask) {
-				this.$warp.removeChild(this.$mask);
-			}
 		}
 
 		async _show(animate: boolean) {
@@ -213,8 +259,7 @@ const getStackDrawerClass = () =>
 
 			if (!currentModel) return false;
 
-			if (currentModel.vmWarp && currentModel.vmWarp.style.display !== 'none')
-				return false;
+			if (currentModel.vmWarp && this._isShow()) return false;
 
 			if (!currentModel.vmWarp) {
 				// 第一次挂载
@@ -257,16 +302,30 @@ const getStackDrawerClass = () =>
 			return true;
 		}
 
+		_hideNow() {
+			if (!this._isShow()) {
+				return false;
+			}
+
+			const { currentModel, $warp } = this;
+
+			_deactivate(currentModel);
+
+			if (!$warp.hasAttribute(CUSTOM_WARP_ATTR)) {
+				$warp.style.display = 'none';
+			}
+		}
+
 		async _hide(animate: boolean) {
 			if (!this._isShow()) {
 				return false;
 			}
+
 			const { currentModel, $warp } = this;
 
 			if (animate) await _leaveTransition(currentModel);
 
 			_deactivate(currentModel);
-			_disapper(currentModel);
 
 			if (!$warp.hasAttribute(CUSTOM_WARP_ATTR)) {
 				$warp.style.display = 'none';
@@ -284,12 +343,6 @@ const getStackDrawerClass = () =>
 		) {
 			const mOptions = { ...StackDrawer.defaultOptions, ...options };
 
-			if (mOptions.mask) {
-				this._addMask(mOptions.maskCloseAnimate);
-			} else {
-				this._removeMask();
-			}
-
 			// 数据存储
 			this.currentModel = {
 				component,
@@ -305,6 +358,15 @@ const getStackDrawerClass = () =>
 			}
 
 			return StackDrawer;
+		}
+
+		_replace(
+			component: Vue.ComponentOptions<Vue>,
+			propsData: any = {},
+			options: StackDrawerOptions = {}
+		) {
+			this._closeNow(false);
+			this._push(component, propsData, options);
 		}
 
 		_$on(eventName: string, fn: Function, keepEmit?: boolean) {
@@ -336,11 +398,31 @@ const getStackDrawerClass = () =>
 			return StackDrawer;
 		}
 
-		async _close(animate: boolean) {
+		_closeNow(triggerEvent = true) {
+			if (typeof this._beforeCloseFn === 'function' && triggerEvent) {
+				this._beforeCloseFn();
+			}
 			const readyDestoryDrawerModel = this._remove(this._getLength());
+			this._hideNow();
 			delete this.currentModel;
-			await this._hide(animate);
 			_destoryDrawer(readyDestoryDrawerModel);
+			if (typeof this._afterCloseFn === 'function' && triggerEvent) {
+				this._afterCloseFn();
+			}
+			return true;
+		}
+
+		async _close(animate: boolean) {
+			if (typeof this._beforeCloseFn === 'function') {
+				this._beforeCloseFn();
+			}
+			const readyDestoryDrawerModel = this._remove(this._getLength());
+			await this._hide(animate);
+			delete this.currentModel;
+			_destoryDrawer(readyDestoryDrawerModel);
+			if (typeof this._afterCloseFn === 'function') {
+				this._afterCloseFn();
+			}
 			return true;
 		}
 
@@ -421,22 +503,37 @@ const getStackDrawerClass = () =>
 			}
 			return null;
 		}
+
+		static clear() {
+			StackDrawer.closeNow();
+			const { instance } = StackDrawer;
+			StackDrawer.removeBeforeCloseEvent();
+			StackDrawer.removeAfterCloseEvent();
+			if (!instance) return;
+			if (instance?.$warp) {
+				instance.$warp.remove();
+			}
+			delete StackDrawer.instance;
+		}
 	};
+
+export type StackDrawerClass = ReturnType<typeof getStackDrawerClass> &
+	Record<any, any>;
 
 // getStackDrawer 构建多个实例
 export const getStackDrawer = () =>
-	new Proxy<ReturnType<typeof getStackDrawerClass>>(getStackDrawerClass(), {
+	new Proxy<StackDrawerClass>(getStackDrawerClass(), {
 		get(target, key: string) {
 			if (startWidthOpPerfix(key as string)) {
 				return target._getVmData(transformKey(key));
 			}
-			return target[key as keyof ReturnType<typeof getStackDrawerClass>];
+			return target[key as keyof StackDrawerClass];
 		},
 		set(target, key: string, value) {
 			if (startWidthOpPerfix(key as string)) {
 				target._setProps(transformKey(key), value);
 			} else {
-				target[key as keyof ReturnType<typeof getStackDrawerClass>] = value;
+				target[key as keyof StackDrawerClass] = value;
 			}
 			return true;
 		},

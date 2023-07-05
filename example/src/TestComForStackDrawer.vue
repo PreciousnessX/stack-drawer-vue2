@@ -2,11 +2,11 @@
 	<div class="test-com">
 		<TestStackDrawerChild v-if="show" v-bind="$attrs" v-on="$listeners" />
 		<div @click="show = !show">点击</div>
-		<ul>
-			<li v-for="li in list" :key="li" class="li" @click="clickOne(li)">
+		<div>
+			<div v-for="li in list" :key="li" class="li" @click="clickOne(li)">
 				{{ li }}
-			</li>
-		</ul>
+			</div>
+		</div>
 	</div>
 </template>
 <script lang="ts">
@@ -55,6 +55,7 @@ export default defineComponent({
 	padding: 20px;
 
 	.li {
+		width: 100%;
 		line-height: 32px;
 		border: 1px solid #ccc;
 		margin-top: 5px;

@@ -1,6 +1,6 @@
 # StackDrawer
 
-> StackDrawer 是一个可以无限push 任意vue组件,并挂载组件 的测弹窗组件; 支持返回、自定义容器、显示隐藏、遮罩层...
+> StackDrawer 是一个可以无限push 任意vue组件,并挂载组件 的测弹窗组件; 支持返回、自定义容器、显示隐藏...
 
 
 ## 1. 基本使用
@@ -35,7 +35,7 @@ const MyComponent = {
 
 // 基本使用
 StackDrawer
-    .push(MyComponent, { list: [1,2,3,4] }, { mask: false })
+    .push(MyComponent, { list: [1,2,3,4] })
     .$on('test', (da) => {
         console.log('test 事件触发',da)
     })
@@ -95,71 +95,97 @@ StackDrawer.close();
 | --- | --- | --- | --- | --- |
 | width | number | no | 测弹窗宽度,不设置时为组件撑开的宽度 | - |
 | customClass | string | no | 自定义类名 | - |
-| mask | boolean | no | 是否有遮罩层, 使用自定义容器 该属性无效 | false |
 | maskCloseAnimate | boolean | no | 遮罩层触发的关闭是否有动画, 使用自定义容器 该属性无效 | true |
 | pushStack | boolean | no | 是否入栈, 设置为false 组件不会记录在栈中,无法返回 | true |
 | keepEmit | boolean | no | 子组件非活跃状态下保持事件触发 | false |
 | store | VueX | no | store 状态管理仓库，可以传入宿主vue实例的 store | - |
+| router | Router | no | router 路由对象| - |
 
 
 &#160;&#160;&#160;&#160;
 
+### &#160;&#160;&#160;&#160; 4. `replace(component:Vue.ComponentOptions<Vue>, propsData:any, options:StackDrawerOptions = {}):StackDrawer` 替换当前组件,并且清空栈,参数同push
 
 
 
-### &#160;&#160;&#160;&#160; 4. `setGlobalOption(globalOptions:StackDrawerOptions)` 设置全局配置
+
+### &#160;&#160;&#160;&#160; 5. `setGlobalOption(globalOptions:StackDrawerOptions)` 设置全局配置
 
 &#160;&#160;&#160;&#160;&#160; 可以设置一个全局的配置, push方法中options将合并globalOptions
 
 &#160;&#160;&#160;&#160;
 
 
-### &#160;&#160;&#160;&#160; 5. `$on(eventName:string, fn:Function):StackDrawer` 为当前组件注册事件
+### &#160;&#160;&#160;&#160; 6. `$on(eventName:string, fn:Function):StackDrawer` 为当前组件注册事件
 
 &#160;&#160;&#160;&#160;&#160; eventName: 事件名字, fn: 事件回调函数, 返回 StackDrawer
 
 &#160;&#160;&#160;&#160;
 
 
-### &#160;&#160;&#160;&#160; 6. `$off(eventName:string, fn:Function)` 为当前组件移除事件
+### &#160;&#160;&#160;&#160; 7. `$off(eventName:string, fn:Function)` 为当前组件移除事件
 
 &#160;&#160;&#160;&#160;&#160; eventName: 事件名字, fn: 事件回调函数, 返回 StackDrawer
 
 &#160;&#160;&#160;&#160;
 
 
-### &#160;&#160;&#160;&#160; 7. `async goBack(num:number = 1, animate = true) ` 返回上一页(上一个组件实例),动画结束后 异步执行完毕
+### &#160;&#160;&#160;&#160; 8. `async goBack(num:number = 1, animate = true) ` 返回上一页(上一个组件实例),动画结束后 异步执行完毕
 
 &#160;&#160;&#160;&#160;&#160; num: 返回页数, animate: 是否有动画
 
 &#160;&#160;&#160;&#160;
 
-### &#160;&#160;&#160;&#160; 8. `async close(animate = true) ` 关闭测弹窗 销毁栈中所有组件 并清空栈,动画结束后 异步执行完毕
+### &#160;&#160;&#160;&#160; 9. `async close(animate = true) ` 关闭测弹窗 销毁栈中所有组件 并清空栈,动画结束后 异步执行完毕
 
 &#160;&#160;&#160;&#160;&#160; animate: 是否有动画
 
 &#160;&#160;&#160;&#160;
 
 
-### &#160;&#160;&#160;&#160; 9. `async show(animate = true) ` 显示 ,动画结束后 异步执行完毕
+### &#160;&#160;&#160;&#160; 10. `closeNow() ` 立即关闭 测弹窗 不会有动画, 且closeNow是一个同步函数
+
+&#160;&#160;&#160;&#160;
+
+### &#160;&#160;&#160;&#160; 11. `async show(animate = true) ` 显示 ,动画结束后 异步执行完毕
 
 &#160;&#160;&#160;&#160;&#160; animate: 是否有动画
 
 &#160;&#160;&#160;&#160;
 
-### &#160;&#160;&#160;&#160; 10. `async hide(animate = true) `隐藏 并不会清空栈,动画结束后 异步执行完毕
+### &#160;&#160;&#160;&#160; 12. `async hide(animate = true) `隐藏 并不会清空栈,动画结束后 异步执行完毕
 
 &#160;&#160;&#160;&#160;&#160; animate: 是否有动画
 
 &#160;&#160;&#160;&#160;
 
 
-### &#160;&#160;&#160;&#160; 11. `getLength()`  获取栈长度
+### &#160;&#160;&#160;&#160; 13. `getLength()`  获取栈长度
+
+&#160;&#160;&#160;&#160;
+
+### &#160;&#160;&#160;&#160; 14. `registerBeforeCloseEvent(fn:Function)`  注册关闭之前的 钩子函数
+
+&#160;&#160;&#160;&#160;
+
+### &#160;&#160;&#160;&#160; 15. `removeBeforeCloseEvent(fn:Function)`  移除关闭之前的 钩子函数
+
+&#160;&#160;&#160;&#160;
+
+### &#160;&#160;&#160;&#160; 16. `registerAfterCloseEvent(fn:Function)`  注册关闭之后的 钩子函数
+
+&#160;&#160;&#160;&#160;
+
+### &#160;&#160;&#160;&#160; 17. `removeAfterCloseEvent(fn:Function)`  移除关闭之后的 钩子函数
+
+&#160;&#160;&#160;&#160;
+
+### &#160;&#160;&#160;&#160; 18. `clear()`  关闭并清空StackDrawer 且 会移除StackDrawer的所有事件,一般在宿主组件销毁之前调用
 
 &#160;&#160;&#160;&#160;
 
 
-### &#160;&#160;&#160;&#160; 12. `$$`  $$运算符可以操作当前组件的数据, 比如修改子组件props, 调用子组件方法
+### &#160;&#160;&#160;&#160; 19. `$$`  $$运算符可以操作当前组件的数据, 比如修改子组件props, 调用子组件方法
 
 
 ``` js
@@ -173,14 +199,26 @@ StackDrawer.$$list = ['modify1', 'modify2', 'modify3', 'modify4', 'modify5', 'mo
 StackDrawer.$$getSomething();
 ```
 
-## 3. 导出方法 列表
+## 3. StackDrawer 属性
+### &#160;&#160;&#160;&#160; StackDrawer.clickOutClose :  Boolean 点击非弹窗区域是否关闭StackDrawer
+### &#160;&#160;&#160;&#160;
+
+
+### &#160;&#160;&#160;&#160; StackDrawer.closeSelector : String  有些元素可能设置了阻止点击事件冒泡, 这样的元素无法触发 "点击非弹窗区域关闭测弹窗", 如果你想这类元素在被点击时关闭StackDrawer, 你可以将closeSelector设置为这类元素的css选择器
+### &#160;&#160;&#160;&#160;
+
+
+### &#160;&#160;&#160;&#160; StackDrawer.ignoreSelector : String 如果你想要某类元素在点击时不触发关闭StackDrawer, 你可以将ignoreSelector的值设置为这类元素的css选择器
+&#160;&#160;&#160;&#160;
+
+## 4. 导出方法 列表
 ### &#160;&#160;&#160;&#160; 1. `getStackDrawer()`  工厂函数 构造多个StackDrawer
 
 ``` js
 import { getStackDrawer } from '@/components/StackDrawer';
 const otherStackDrawer = getStackDrawer(); // 工厂函数 构造多个StackDrawer
 otherStackDrawer
-    .push(MyComponent, { list: [1,2,3,4] }, { mask: false })
+    .push(MyComponent, { list: [1,2,3,4] })
     .$on('test', (da) => {
         console.log('test 事件触发',da)
     })
@@ -197,7 +235,7 @@ otherStackDrawer
 
 ``` js
 StackDrawer
-    .push(MyComponent, { list: [1,2,3,4] }, { mask: false })
+    .push(MyComponent, { list: [1,2,3,4] })
     .$on('test', (da) => {
         console.log('test 事件触发',da)
     })
